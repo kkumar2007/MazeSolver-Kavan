@@ -147,6 +147,10 @@ public class Maze {
      */
     public boolean isValidCell(int row, int col) {
         // TODO: Complete this function
-        return true;
+        if (row >= 0 && row < numRows && col >= 0 && col < numCols) {
+            // Check if the cell is not a wall
+            return !mazeGrid[row][col].isWall();
+        }
+        return false;
     }
 }
