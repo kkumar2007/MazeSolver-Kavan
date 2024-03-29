@@ -5,6 +5,9 @@
  */
 
 import java.util.ArrayList;
+import java.util.Stack;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class MazeSolver {
     private Maze maze;
@@ -48,8 +51,62 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeDFS() {
         // TODO: Use DFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
+        // Initialize a stack to perform DFS
+        Stack<MazeCell> stack = new Stack<>();
+        // Initialize an ArrayList to store the solution
+        ArrayList<MazeCell> sol = new ArrayList<>();
 
-        return null;
+        stack.push(maze.getStartCell());
+
+        while (!stack.isEmpty()) {
+            // Pop the top cell from the stack
+            MazeCell currentCell = stack.pop();
+
+            // Mark the current cell as explored
+            currentCell.setExplored(true);
+
+            // If the current cell is the end cell, break the loop
+            if (currentCell == maze.getEndCell()) {
+                break;
+            }
+            // Get the neighbors of the current cell
+            ArrayList<MazeCell> neighbors = getUnexploredNeighbors(currentCell);
+
+            // Explore each neighbor
+            for (MazeCell neighbor : neighbors) {
+                // Set the parent of the neighbor
+                neighbor.setParent(currentCell);
+                // Add the neighbor to the stack
+                stack.push(neighbor);
+            }
+        }
+        sol = getSolution();
+
+        return sol;
+
+    }
+    private ArrayList<MazeCell> getUnexploredNeighbors(MazeCell cell) {
+        ArrayList<MazeCell> neighbors = new ArrayList<>();
+
+        int row = cell.getRow();
+        int col = cell.getCol();
+
+        // Explore neighboring cells in all directions
+        exploreNeighbor(row - 1, col, neighbors); // NORTH
+        exploreNeighbor(row, col + 1, neighbors); // EAST
+        exploreNeighbor(row + 1, col, neighbors); // SOUTH
+        exploreNeighbor(row, col - 1, neighbors); // WEST
+
+        return neighbors;
+    }
+
+    // Check if the neighbor is unexplored and add it to the list
+    private void exploreNeighbor(int row, int col, ArrayList<MazeCell> neighbors) {
+        //Checks if the cell is valid or not and if the cell has already been explored
+        if (maze.isValidCell(row, col) && !maze.getCell(row, col).isExplored()) {
+            //if not explored or other condition: then it is added to neighbors.
+            neighbors.add(maze.getCell(row, col));
+        }
     }
 
     /**
@@ -59,7 +116,41 @@ public class MazeSolver {
     public ArrayList<MazeCell> solveMazeBFS() {
         // TODO: Use BFS to solve the maze
         // Explore the cells in the order: NORTH, EAST, SOUTH, WEST
-        return null;
+        Queue<MazeCell> queue = new LinkedList<>();
+        // Initialize an ArrayList to store the solution
+        ArrayList<MazeCell> sol = new ArrayList<>();
+        // Add the start cell to the queue
+        queue.add(maze.getStartCell());
+
+        // Continue until the queue is empty
+        while (!queue.isEmpty()) {
+            // Remove the front cell from the queue
+            MazeCell currentCell = queue.remove();
+
+            // Mark the current cell as explored
+            currentCell.setExplored(true);
+
+            // If the current cell is the end cell, break the loop
+            if (currentCell == maze.getEndCell()) {
+                break;
+            }
+
+            // Get the neighbors of the current cell
+            ArrayList<MazeCell> neighbors = getUnexploredNeighbors(currentCell);
+
+            // Explore each neighbor
+            for (MazeCell neighbor : neighbors) {
+                // Set the parent of the neighbor
+                neighbor.setParent(currentCell);
+                // Add the neighbor to the queue
+                queue.add(neighbor);
+            }
+        }
+
+        // Get the solution path
+        sol = getSolution();
+
+        return sol;
     }
 
     public static void main(String[] args) {
